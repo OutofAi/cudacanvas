@@ -50,7 +50,7 @@ If you are running torch 2.1.2 with Cuda 11.8 (2.1.2+cu118) you can run this scr
 ```
 pip install cudacanvas --find-links https://github.com/OutofAi/cudacanvas/wiki/cu118
 ```
-or manaully download the latest wheel releases from https://github.com/OutofAi/cudacanvas
+or manaully download the latest wheel releases from https://github.com/OutofAi/cudacanvas/releases/
 
 # Support
 Also support my channel ☕ ☕ : https://www.buymeacoffee.com/outofai
