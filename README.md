@@ -33,14 +33,19 @@ while (True):
 Before instllation make sure you have torch with cuda support already installed on your machine 
 
 Identify your current torch and cuda version, cudacanvas currently only supports torch 2.1.2 and cuda (11.8 or 12.1)
+
 ```python
 import torch
 torch.__version__
 ```
+
+### CUDA 12.1
 If you are running torch 2.1.2 with Cuda 12.1 (2.1.2+cu121) you can download it straight from pypi by running
 ```
 pip install cudacanvas
 ```
+
+### CUDA 11.8
 If you are running torch 2.1.2 with Cuda 11.8 (2.1.2+cu118) you can run this script
 ```
 pip install cudacanvas --find-links https://github.com/OutofAi/cudacanvas/wiki/cu118
