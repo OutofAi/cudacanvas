@@ -1,0 +1,282 @@
+name: Wheels
+
+on:
+  workflow_dispatch:
+
+env:
+  GLFW_VERSION: "3.3.9"
+  CUDAPIXELCANVAS_VERSION: "1.0.0"
+  
+jobs:
+  
+  build-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+  
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.YOUR_PAT_SECRET }}
+        with:
+          tag_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
+          release_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
+          draft: false
+          prerelease: false
+
+  build-windows:
+    runs-on: windows-latest
+    needs: build-tag
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        torch-version: ['2.1.2']
+        cuda-version: ['11.8', '12.1']
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+            
+    - name: List Visual Studio installations
+      run: |
+        & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -products * -legacy -format text
+
+    - name: Install Wheel
+      run:
+        pip3 install setuptools wheel
+        
+    - name: Install Torch + Cuda ${{ matrix.cuda-version }}
+      run: |
+        $CUDA_VERSION="${{ matrix.cuda-version }}"
+        $CUDA_VERSION_NO_DOT=$CUDA_VERSION -replace '\.', ''
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu$CUDA_VERSION_NO_DOT
+        python3 --version
+ 
+    - name: Download and Extract CUDA Toolkit ${{ matrix.cuda-version }}
+      run: |
+        if ("${{ matrix.cuda-version }}" -eq "12.1") {
+          choco install cuda
+        } else {
+          choco install cuda --version=11.8.0.52206
+        }
+
+    - name: Install dependencies and build GLFW for Windows
+      run: |
+        if ("${{env.GLFW_VERSION}}" -eq "") {
+          throw "GLFW_VERSION is not set"
+        }
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        choco install unzip
+        choco install curl
+        curl -LO https://github.com/glfw/glfw/releases/download/${{env.GLFW_VERSION}}/glfw-${{env.GLFW_VERSION}}.zip
+        unzip glfw-${{env.GLFW_VERSION}}.zip
+        mkdir build
+        cd build
+        cmake -G "Visual Studio 17 2022" -A x64 ../glfw-${{env.GLFW_VERSION}} -DBUILD_SHARED_LIBS=ON -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF
+        cmake --build . --config Release
+        cp src/Release/glfw3.dll ../glfw-${{env.GLFW_VERSION}}/glfw3.dll
+        cp src/Release/glfw3dll.lib ../glfw-${{env.GLFW_VERSION}}/glfw3dll.lib
+        Get-ChildItem -Path "src/Release/"
+        cd..
+
+    - name: List contents of a directory
+      run: |
+        Get-ChildItem -Path "glfw-${{env.GLFW_VERSION}}"
+
+    - name: Find CUDA Toolkit path
+      run: |
+        $env:CUDART_PATH= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{ matrix.cuda-version }}\bin"
+        $env:CUDART_HOME= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${{ matrix.cuda-version }}\bin"
+
+
+    - name: Generate Wheels
+      run: |
+        python3 setup.py bdist_wheel --plat-name win_amd64
+      env:
+        INCLUDE_PATH: glfw-${{ env.GLFW_VERSION }}/include
+        LIB_PATH: glfw-${{ env.GLFW_VERSION }}
+
+    - name: Generate latest Wheels
+      if: matrix.cuda-version == '12.1'
+      run: |
+        python3 setup.py bdist_wheel --plat-name win_amd64
+      env:
+        INCLUDE_PATH: glfw-${{ env.GLFW_VERSION }}/include
+        LIB_PATH: glfw-${{ env.GLFW_VERSION }}
+        BASE_VERSION: 1
+        
+    - name: Upload assets
+      run: |
+        for filename in dist/*; do
+          echo "Uploading $filename"
+          gh release upload ${{ env.CUDAPIXELCANVAS_VERSION }} "$filename" --clobber --repo ${{ github.repository }}
+        done
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.YOUR_PAT_SECRET }}    
+
+
+  build-linux:
+    runs-on: ubuntu-latest
+    # container: sameli/manylinux2014_x86_64_cuda_11.8
+    container: quay.io/pypa/manylinux2014_x86_64
+    needs: build-tag
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        torch-version: ['2.1.2']
+        cuda-version: ['11.8', '12.1']
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Add GitHub CLI repository
+        run: |
+          yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+      
+      - name: Install GitHub CLI
+        run: |
+          yum install -y gh
+      
+      - name: Display date and time
+        run: date
+
+      - name: Install Cuda
+        run: |
+          CUDA_VERSION=${{ matrix.cuda-version }}
+          CUDA_VERSION_DASHED="${CUDA_VERSION//./-}"
+          yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
+          yum clean all
+          yum -y install cuda-compiler-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-devel-$CUDA_VERSION_DASHED.x86_64
+          
+          echo "PATH=/usr/local/cuda/bin:$PATH" >> $GITHUB_ENV
+          echo "CUDA_HOME=/usr/local/cuda" >> $GITHUB_ENV
+          echo "CUDA_ROOT=/usr/local/cuda" >> $GITHUB_ENV
+          echo "CUDA_PATH=/usr/local/cuda" >> $GITHUB_ENV
+          echo "CUDADIR=/usr/local/cuda" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" >> $GITHUB_ENV
+          echo "CUDNN_LIBRARY_PATH=/usr/local/cuda/lib64" >> $GITHUB_ENV
+          echo "CUDNN_INCLUDE_DIR=/usr/local/cuda/include" >> $GITHUB_ENV
+      
+      - name: Display NVCC version
+        run: |
+          which nvcc
+          nvcc --version
+
+      - name: Install git lfs
+        run: |
+          yum install -y git-lfs
+          
+      - name: Install Miniconda
+        run: |
+          curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
+          bash miniconda.sh -b -p $HOME/miniconda
+          echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+  
+      - name: Create and use a Conda environment
+        run: |
+          source $HOME/miniconda/etc/profile.d/conda.sh
+          conda create -n myenv python=${{ matrix.python-version }} -y
+          conda activate myenv
+
+      - name: Install PyTorch ${{ matrix.torch-version }}
+        env:
+          cuda: "${{ matrix.cuda-version }}"
+          torch: "${{ matrix.torch-version }}"
+        shell: bash
+        run: |
+          source $HOME/miniconda/etc/profile.d/conda.sh
+          conda activate myenv
+          python --version
+          python -m pip install -q --upgrade pip
+          python -m pip install -q wheel twine typing_extensions
+          python -m pip install -q bs4 requests tqdm
+
+          package=""
+          url=""
+  
+          if [[ "${cuda}" == "11.8" ]]; then
+              package="torch==${torch}+cu118"
+              url=https://download.pytorch.org/whl/torch_stable.html
+          elif [[ "${cuda}" == "12.1" ]]; then
+              package="torch==${torch}"
+          else
+              echo "Unsupported CUDA version: ${cuda}"
+              exit 1
+          fi
+  
+          retry() {
+            $* || (sleep 1 && $*) || (sleep 2 && $*) || (sleep 4 && $*) || (sleep 8 && $*)
+          }
+  
+          if [ "x${url}" == "x" ]; then
+            retry python -m pip install -q $package
+          else
+            retry python -m pip install -q $package -f $url
+          fi
+          
+          python -c "import torch; print('torch version:', torch.__version__)"
+          python --version
+
+          
+      - name: Install dependencies and build GLFW for X11 and Wayland
+        run: |
+          curl -LO https://github.com/glfw/glfw/releases/download/${GLFW_VERSION}/glfw-${GLFW_VERSION}.zip
+          unzip glfw-${GLFW_VERSION}.zip
+          curl -LO https://github.com/Kitware/CMake/releases/download/v3.1.3/cmake-3.1.3-Linux-x86_64.tar.gz
+          tar xzf cmake-3.1.3-Linux-x86_64.tar.gz
+          mv cmake-3.1.3-Linux-x86_64 cmake
+          yum install -y libXinerama-devel libXrandr-devel libXcursor-devel libXi-devel extra-cmake-modules libwayland-client-devel libxkbcommon-devel
+          curl -LO https://wayland.freedesktop.org/releases/wayland-protocols-1.17.tar.xz
+          tar xf wayland-protocols-1.17.tar.xz
+          cd wayland-protocols-1.17
+          ./configure
+          make install
+          cd ..
+          mkdir build_x11
+          cd build_x11
+          ../cmake/bin/cmake ../glfw-${GLFW_VERSION} -DBUILD_SHARED_LIBS=ON -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF
+          make
+          cp src/libglfw.so ../glfw-${GLFW_VERSION}/libglfw.so
+          
+      - name: Package
+        run: |
+          source $HOME/miniconda/etc/profile.d/conda.sh
+          conda activate myenv
+          python --version
+          export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
+          export LIB_PATH=glfw-${GLFW_VERSION}
+          python setup.py bdist_wheel --plat-name manylinux2014_x86_64
+
+      - name: Package latest
+        if: matrix.cuda-version == '12.1'
+        run: |
+          source $HOME/miniconda/etc/profile.d/conda.sh
+          conda activate myenv
+          python --version
+          export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
+          export LIB_PATH=glfw-${GLFW_VERSION}
+          export BASE_VERSION=1
+          python setup.py bdist_wheel --plat-name manylinux2014_x86_64
+          rm -rf glfw-${GLFW_VERSION} build
+
+      - name: Upload assets
+        run: |
+          for filename in dist/*; do
+            echo "Uploading $filename"
+            gh release upload ${{ env.CUDAPIXELCANVAS_VERSION }} "$filename" --clobber --repo ${{ github.repository }}
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.YOUR_PAT_SECRET }}    
