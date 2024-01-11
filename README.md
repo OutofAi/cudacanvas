@@ -3,7 +3,9 @@
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40Alex%20Nasa)](https://twitter.com/banterless_ai)
 
 # cudacanvas
-CudaCanvas: High Performance real-time PyTorch Tensor Visualisation in CUDA Eliminating CPU Transfer
+CudaCanvas: Real-time PyTorch Tensor Visualisation in CUDA, Eliminating CPU Transfer
+
+CudaCanvas is a simple Python module that eliminates CPU transfer for Pytorch tensors for displaying and rendering images in the training or evaluation phase, ideal for machine learning scientists and engineers. 
 
 ```python
 import torch
@@ -26,7 +28,6 @@ while (True):
 
 ```
 
-CudaCanvas is a simple Python module that eliminates CPU transfer for Pytorch tensors for displaying and rendering images in the training or evaluation phase, ideal for machine learning scientists and engineers. 
 
 # Installation
 Before instllation make sure you have torch with cuda support already installed on your machine 
