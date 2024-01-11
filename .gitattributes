@@ -1,0 +1,5 @@
+# Example of .gitattributes content
+
+# Mark all files as vendored except Python files
+* linguist-vendored
+*.py linguist-vendored=false
