@@ -19,6 +19,7 @@ _streamer = CudaGLStreamer()
 set_image = _streamer.set_image
 set_title = _streamer.set_title
 create_window = _streamer.create_window
+im_show = _streamer.im_show
 render = _streamer.render
 should_close = _streamer.should_close
 clean_up = _streamer.clean_up

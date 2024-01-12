@@ -42,7 +42,7 @@ ext_modules = [
 
 cuda_version = torch.version.cuda.replace(".", "")
 
-version_base = "1.0.0"
+version_base = "1.0.1"
 
 if os.environ.get('BASE_VERSION'):
     full_version = version_base
@@ -55,7 +55,7 @@ setup(
     author='Ashleigh Watson & Alex Nasa',
     url='https://github.com/OutofAi/cudacanvas',
     packages=['cudacanvas'],
-    description='Efficiently Render Torch Tensors Directly from CUDA to GPU Without CPU Copy',
+    description='Real-time PyTorch Tensor Visualisation in CUDA, Eliminating CPU Transfer',
     long_description=long_description,
     long_description_content_type="text/markdown",
     ext_modules=ext_modules,

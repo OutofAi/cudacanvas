@@ -106,6 +106,16 @@ public:
         glEnable(GL_TEXTURE_2D);
     }
 
+    void imShow(torch::Tensor image)
+    {
+        setImage(image);
+
+        if (!window) {
+            createWindow();
+        }
+        render();
+    }
+
     void render()
     {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -184,6 +194,7 @@ PYBIND11_MODULE(cudaGLStream, m)
         .def("set_image", &CudaGLStreamer::setImage)
         .def("set_title", &CudaGLStreamer::setTitle)
         .def("create_window", &CudaGLStreamer::createWindow)
+        .def("im_show", &CudaGLStreamer::imShow)
         .def("render", &CudaGLStreamer::render)
         .def("should_close", &CudaGLStreamer::shouldClose)
         .def("clean_up", &CudaGLStreamer::cleanUp);
