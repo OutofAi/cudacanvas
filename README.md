@@ -9,28 +9,7 @@ CudaCanvas: Real-time PyTorch Tensor Visualisation in CUDA, Eliminating CPU Tran
 
 CudaCanvas is a simple Python module that eliminates CPU transfer for Pytorch tensors for displaying and rendering images in the training or evaluation phase, ideal for machine learning scientists and engineers. 
 
-```python
-import torch
-import cudacanvas
-
-noise_image = torch.rand((4, 500, 500), device="cuda")
-
-cudacanvas.set_image(noise_image)
-cudacanvas.create_window()
-
-#replace this with you training loop
-while (True):
-
-    cudacanvas.render()
-
-    if cudacanvas.should_close():
-        #end process if the window is closed
-        break
-
-
-```
-
-Also you can simplify that code and directly display the image without explicit window creation (cudacanvas >= v1.0.1)
+Simplified version that directly displays the image without explicit window creation (cudacanvas >= v1.0.1)
 
 ```python
 import torch
@@ -53,6 +32,30 @@ while (True):
 
 
 ```
+
+And with explicit window creation
+
+```python
+import torch
+import cudacanvas
+
+noise_image = torch.rand((4, 500, 500), device="cuda")
+
+cudacanvas.set_image(noise_image)
+cudacanvas.create_window()
+
+#replace this with you training loop
+while (True):
+
+    cudacanvas.render()
+
+    if cudacanvas.should_close():
+        #end process if the window is closed
+        break
+
+
+```
+
 
 # Installation
 Before instllation make sure you have torch with cuda support already installed on your machine 
