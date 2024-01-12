@@ -30,6 +30,29 @@ while (True):
 
 ```
 
+Also you can simplify that code and directly display the image without explicit window creation (cudacanvas >= v1.0.1)
+
+```python
+import torch
+import cudacanvas
+
+
+#REPLACE THIS with you training loop
+while (True):
+
+    #REPLACE THIS with you training code and generation of data
+    noise_image = torch.rand((4, 500, 500), device="cuda")
+
+    #Visualise your data in real-time
+    cudacanvas.im_show(noise_image)
+
+    #OPTIONAL: Terminate training when the window is closed
+    if cudacanvas.should_close():
+        #end process if the window is closed
+        break
+
+
+```
 
 # Installation
 Before instllation make sure you have torch with cuda support already installed on your machine 
