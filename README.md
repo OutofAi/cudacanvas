@@ -5,7 +5,7 @@
 [![Downloads](https://static.pepy.tech/badge/cudacanvas)](https://pepy.tech/project/cudacanvas)
 
 # cudacanvas
-CudaCanvas: Real-time PyTorch Tensor Visualisation in CUDA, Eliminating CPU Transfer
+CudaCanvas: Real-time PyTorch Tensor Image Visualisation in CUDA, Eliminating CPU Transfer
 
 CudaCanvas is a simple Python module that eliminates CPU transfer for Pytorch tensors for displaying and rendering images in the training or evaluation phase, ideal for machine learning scientists and engineers. 
 
