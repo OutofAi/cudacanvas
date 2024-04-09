@@ -42,12 +42,12 @@ ext_modules = [
 
 cuda_version = torch.version.cuda.replace(".", "")
 
-version_base = "1.0.1"
+# Fetching the CUDA version from PyTorch and formatting the version string
+torch_version = torch.__version__.split('+')[0]  # Gets the base version of torch, e.g., '2.2.2'
+cuda_version = torch.version.cuda.replace(".", "")  # Gets CUDA version, e.g., '118'
+version_base = torch_version  # Base version now uses the PyTorch version
 
-if os.environ.get('BASE_VERSION'):
-    full_version = version_base
-else:
-    full_version = version_base + "+cu" + cuda_version
+full_version = version_base + ".post" + cuda_version
 
 setup(
     name='cudacanvas',
