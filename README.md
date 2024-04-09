@@ -73,11 +73,11 @@ Depending on your torch and cuda you can install the relevant cudacanvas package
 ```
 pip install cudacanvas
 ```
-For Other torch and cuda packages replace the +cu from the torch version with .post to generate the relevant package to install so for example for 2.1.2+cu181 the Cudacanvas package you require
-is 2.1.2.post181
+For other torch and cuda packages replace the +cu from the torch version with .post and prefix it with 1. which is the current cudacanvas version to generate the relevant package to install so for example for 2.1.2+cu181 the Cudacanvas package you require
+is 1.2.1.2.post181
 
 ```
-pip install cudacanvas==2.1.2.post118
+pip install cudacanvas==1.2.1.2.post118
 ```
 
 # Support
