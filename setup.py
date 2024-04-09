@@ -45,7 +45,7 @@ cuda_version = torch.version.cuda.replace(".", "")
 # Fetching the CUDA version from PyTorch and formatting the version string
 torch_version = torch.__version__.split('+')[0]  # Gets the base version of torch, e.g., '2.2.2'
 cuda_version = torch.version.cuda.replace(".", "")  # Gets CUDA version, e.g., '118'
-version_base = torch_version  # Base version now uses the PyTorch version
+version_base = "1." + torch_version  # Base version now uses the PyTorch version
 
 full_version = version_base + ".post" + cuda_version
 
