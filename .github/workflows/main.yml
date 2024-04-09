@@ -112,7 +112,7 @@ jobs:
       env:
         INCLUDE_PATH: glfw-${{ env.GLFW_VERSION }}/include
         LIB_PATH: glfw-${{ env.GLFW_VERSION }}
-        BASE_VERSION: 1
+        BASE_VERSION: ${{ matrix.torch-version }}
         
     - name: Upload assets
       run: |
@@ -133,7 +133,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
-        torch-version: ['2.1.2']
+        torch-version: ['2.1.2', '2.2.2']
         cuda-version: ['11.8', '12.1']
     
     steps:
@@ -268,7 +268,7 @@ jobs:
           python --version
           export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
           export LIB_PATH=glfw-${GLFW_VERSION}
-          export BASE_VERSION=1
+          export BASE_VERSION=${{ matrix.torch-version }}
           python setup.py bdist_wheel --plat-name manylinux2014_x86_64
           rm -rf glfw-${GLFW_VERSION} build
 
