@@ -60,7 +60,7 @@ while (True):
 # Installation
 Before instllation make sure you have torch with cuda support already installed on your machine
 
-We aligned pytorch and cuda version with our package the supporting packages are torch (2.0.2, 2.1.2 and 2.2.2) and (11.8 and 12.1)
+We aligned pytorch and cuda version with our package the supporting packages are torch (2.0.1, 2.1.2 and 2.2.2) and (11.8 and 12.1)
 
 Identify your current torch and cuda version
 
