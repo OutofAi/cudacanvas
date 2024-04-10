@@ -47,7 +47,7 @@ torch_version = torch.__version__.split('+')[0].replace(".", "")  # Gets the bas
 cuda_version = torch.version.cuda.replace(".", "")  # Gets CUDA version, e.g., '118'
 version_base = torch_version  # Base version now uses the PyTorch version
 
-full_version = "1.0.2" + ".post" + version_base + cuda_version
+full_version = "1.0.1" + ".post" + version_base + cuda_version
 
 setup(
     name='cudacanvas',
