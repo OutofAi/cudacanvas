@@ -60,7 +60,7 @@ while (True):
 # Installation
 Before instllation make sure you have torch with cuda support already installed on your machine
 
-We aligned pytorch and cuda version with our package the supporting packages are torch (2.2.2 or 2.1.2) and (11.8 or 12.1)
+We aligned pytorch and cuda version with our package the supporting packages are torch (2.0.2, 2.1.2 and 2.2.2) and (11.8 and 12.1)
 
 Identify your current torch and cuda version
 
@@ -77,7 +77,7 @@ For other torch and cuda packages put the torch and cuda version after that cuda
 is 1.0.1.post212181
 
 ```
-pip install cudacanvas==1.0.1.post212181
+pip install cudacanvas==1.0.1.post212181 --force-reinstall
 ```
 
 # Support
