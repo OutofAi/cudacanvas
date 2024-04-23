@@ -30,6 +30,7 @@ while (True):
 
     #OPTIONAL: Terminate training when the window is closed
     if cudacanvas.should_close():
+        cudacanvas.clean_up()
         #end process if the window is closed
         break
 
