@@ -54,6 +54,7 @@ while (True):
     cudacanvas.render()
 
     if cudacanvas.should_close():
+        cudacanvas.clean_up()
         #end process if the window is closed
         break
 
