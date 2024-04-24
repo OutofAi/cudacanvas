@@ -9,35 +9,35 @@ env:
   
 jobs:
   
-  build-tag:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  # build-tag:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
           
-      - name: Install GitHub CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gh
+  #     - name: Install GitHub CLI
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y gh
   
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.YOUR_PAT_SECRET }}
-        with:
-          tag_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
-          release_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
-          draft: false
-          prerelease: false
+  #     - name: Create Release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.YOUR_PAT_SECRET }}
+  #       with:
+  #         tag_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
+  #         release_name: ${{ env.CUDAPIXELCANVAS_VERSION }}
+  #         draft: false
+  #         prerelease: false
 
   build-windows:
     runs-on: windows-latest
-    needs: build-tag
+    # needs: build-tag
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.0.0', '2.0.1', '2.1.0', '2.1.1', '2.1.2', '2.2.0', '2.2.1', '2.2.2']
+        torch-version: ['2.3.0']
         cuda-version: ['11.8', '12.1']
         exclude:
           - torch-version: '2.0.1'
@@ -133,11 +133,11 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
-    needs: build-tag
+    # needs: build-tag
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.0.0', '2.0.1', '2.1.0', '2.1.1', '2.1.2', '2.2.0', '2.2.1', '2.2.2']
+        torch-version: ['2.3.0']
         cuda-version: ['11.8', '12.1']
         exclude:
           - torch-version: '2.0.1'
