@@ -40,6 +40,7 @@ while (True):
 You can visualise the latent of Stable Diffusion during sampling in real-time whilst waiting for the steps to finish
 
 ```python
+
 import warnings
 warnings.filterwarnings("ignore")
 from diffusers import StableDiffusionPipeline
@@ -55,6 +56,10 @@ def display_tensors(pipe, step, timestep, callback_kwargs):
         image = image / image.max()
     
     cudacanvas.im_show(image.squeeze(0))
+    
+    if cudacanvas.should_close():
+        cudacanvas.clean_up()
+        pipe._interrupt = True
     
     return callback_kwargs
 
@@ -72,6 +77,7 @@ image = pipeline(
 ).images[0]
 
 cudacanvas.clean_up()
+
 ```
 
 
