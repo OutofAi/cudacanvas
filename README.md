@@ -37,28 +37,41 @@ while (True):
 
 ```
 
-And with explicit window creation
+You can visualise the latent of Stable Diffusion during sampling in real-time whilst waiting for the steps to finish
 
 ```python
+import warnings
+warnings.filterwarnings("ignore")
+from diffusers import StableDiffusionPipeline
 import torch
 import cudacanvas
 
-noise_image = torch.rand((4, 500, 500), device="cuda")
+def display_tensors(pipe, step, timestep, callback_kwargs):
+    latents = callback_kwargs["latents"]
 
-cudacanvas.set_image(noise_image)
-cudacanvas.create_window()
+    with torch.no_grad():
+        image = pipe.vae.decode(latents / pipe.vae.config.scaling_factor, return_dict=False)[0]
+        image = image - image.min()
+        image = image / image.max()
+    
+    cudacanvas.im_show(image.squeeze(0))
+    
+    return callback_kwargs
 
-#replace this with you training loop
-while (True):
+pipeline = StableDiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-2-1-base",
+    torch_dtype=torch.float16,
+    variant="fp16"
+).to("cuda")
 
-    cudacanvas.render()
+image = pipeline(
+    prompt="A croissant shaped like a cute bear.",
+    negative_prompt="Deformed, ugly, bad anatomy",
+    callback_on_step_end=display_tensors,
+    callback_on_step_end_tensor_inputs=["latents"],
+).images[0]
 
-    if cudacanvas.should_close():
-        cudacanvas.clean_up()
-        #end process if the window is closed
-        break
-
-
+cudacanvas.clean_up()
 ```
 
 
