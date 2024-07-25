@@ -5,7 +5,7 @@ on:
 
 env:
   GLFW_VERSION: "3.3.9"
-  CUDAPIXELCANVAS_VERSION: "1.0.4"
+  CUDAPIXELCANVAS_VERSION: "1.0.5"
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
   
 jobs:
@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.3.1']
+        torch-version: ['2.4.0']
         cuda-version: ['11.8', '12.1']
     steps:
     - uses: actions/checkout@v3
@@ -133,7 +133,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.3.1']
+        torch-version: ['2.4.0']
         cuda-version: ['11.8', '12.1']
     steps:
       - uses: actions/checkout@v3
