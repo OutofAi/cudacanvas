@@ -136,12 +136,6 @@ jobs:
         torch-version: ['2.3.1, 2.4.0']
         cuda-version: ['11.8', '12.1']
     steps:
-      - name: Workaround For Node Error
-        run: |
-          cd $RUNNER_HOME/actions-runner/externals
-          mv node20 node20.bak
-          ln -s node16 node20
-           
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
