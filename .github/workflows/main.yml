@@ -5,7 +5,7 @@ on:
 
 env:
   GLFW_VERSION: "3.3.9"
-  CUDAPIXELCANVAS_VERSION: "1.0.3"
+  CUDAPIXELCANVAS_VERSION: "1.0.4"
   
 jobs:
   
@@ -37,13 +37,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.0.0', '2.0.1', '2.1.0', '2.1.1', '2.1.2', '2.2.0', '2.2.1', '2.2.2', '2.3.0']
+        torch-version: ['2.3.1, 2.4.0']
         cuda-version: ['11.8', '12.1']
-        exclude:
-          - torch-version: '2.0.1'
-            cuda-version: '12.1'
-          - torch-version: '2.0.0'
-            cuda-version: '12.1'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -137,7 +132,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.0.0', '2.0.1', '2.1.0', '2.1.1', '2.1.2', '2.2.0', '2.2.1', '2.2.2', '2.3.0']
+        torch-version: ['2.3.1, 2.4.0']
         cuda-version: ['11.8', '12.1']
         exclude:
           - torch-version: '2.0.1'
