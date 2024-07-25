@@ -134,12 +134,13 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11']
         torch-version: ['2.3.1, 2.4.0']
         cuda-version: ['11.8', '12.1']
-        exclude:
-          - torch-version: '2.0.1'
-            cuda-version: '12.1'
-          - torch-version: '2.0.0'
-            cuda-version: '12.1'
     steps:
+      - name: Workaround For Node Error
+        run: |
+          cd $RUNNER_HOME/actions-runner/externals
+          mv node20 node20.bak
+          ln -s node16 node20
+           
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
