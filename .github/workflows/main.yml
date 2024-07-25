@@ -38,11 +38,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.3.1, 2.4.0']
+        torch-version: ['2.3.1', '2.4.0']
         cuda-version: ['11.8', '12.1']
-        exclude:
-          - python-version: '3.8'
-            torch-version: '2.4.0'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -136,11 +133,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.3.1, 2.4.0']
+        torch-version: ['2.3.1', '2.4.0']
         cuda-version: ['11.8', '12.1']
-        exclude:
-          - python-version: '3.8'
-            torch-version: '2.4.0'
     steps:
       - uses: actions/checkout@v3
         with:
