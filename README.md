@@ -93,7 +93,7 @@ import torch
 torch.__version__
 ```
 
-Depending on your torch and cuda you can install the relevant cudacanvas package, for the latest 2.2.2+cu121 you can simply download the latest package
+Depending on your torch and cuda you can install the relevant cudacanvas package, for the latest one matching the latest pytorch package you can simply download the latest package
 ```
 pip install cudacanvas
 ```
