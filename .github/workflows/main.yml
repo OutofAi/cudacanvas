@@ -207,10 +207,9 @@ jobs:
           url=""
   
           if [[ "${cuda}" == "11.8" ]]; then
-              package="torch==${torch}+cu118"
-              url=https://download.pytorch.org/whl/torch_stable.html
+              package="torch --index-url https://download.pytorch.org/whl/cu118"
           elif [[ "${cuda}" == "12.1" ]]; then
-              package="torch==${torch}"
+              package="torch --index-url https://download.pytorch.org/whl/cu121"
           else
               echo "Unsupported CUDA version: ${cuda}"
               exit 1
