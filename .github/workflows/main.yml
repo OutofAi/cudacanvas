@@ -64,13 +64,13 @@ jobs:
  
     - name: Download and Extract CUDA Toolkit ${{ matrix.cuda-version }}
       run: |
-        if [ "${{ matrix.cuda-version }}" == "12.1" ]; then
-            choco install cuda --version=12.2.0.53625
-        elif [ "${{ matrix.cuda-version }}" == "12.5" ]; then
-            choco install cuda --version=12.5.0.555
-        else
-            choco install cuda --version=11.8.0.52206
-        fi
+        if ("${{ matrix.cuda-version }}" -eq "12.1") {
+          choco install cuda --version=12.2.0.53625
+        else if ("${{ matrix.cuda-version }}" == "12.4") {
+          choco install cuda --version=12.4.0.551
+        } else {
+          choco install cuda --version=11.8.0.52206
+        }
         
     - name: Install dependencies and build GLFW for Windows
       run: |
