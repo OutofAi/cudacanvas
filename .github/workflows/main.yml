@@ -39,7 +39,8 @@ jobs:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
         torch-version: ['2.5']
-        cuda-version: ['11.8', '12.1', '12.4']
+        # cuda-version: ['11.8', '12.1', '12.4']
+        cuda-version: ['12.1']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -128,157 +129,157 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
 
 
-  build-linux:
-    runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
-    needs: build-tag
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.5']
-        cuda-version: ['11.8', '12.1', '12.4']
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+  # build-linux:
+  #   runs-on: ubuntu-latest
+  #   container: quay.io/pypa/manylinux2014_x86_64
+  #   needs: build-tag
+  #   strategy:
+  #     matrix:
+  #       python-version: ['3.8', '3.9', '3.10', '3.11']
+  #       torch-version: ['2.5']
+  #       cuda-version: ['11.8', '12.1', '12.4']
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
           
-      - name: Add GitHub CLI repository
-        run: |
-          yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+  #     - name: Add GitHub CLI repository
+  #       run: |
+  #         yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
       
-      - name: Install GitHub CLI
-        run: |
-          yum install -y gh
+  #     - name: Install GitHub CLI
+  #       run: |
+  #         yum install -y gh
       
-      - name: Display date and time
-        run: date
+  #     - name: Display date and time
+  #       run: date
 
-      - name: Install Cuda
-        run: |
-          CUDA_VERSION=${{ matrix.cuda-version }}
-          CUDA_VERSION_DASHED="${CUDA_VERSION//./-}"
-          yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
-          yum clean all
-          yum -y install cuda-compiler-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-devel-$CUDA_VERSION_DASHED.x86_64
+  #     - name: Install Cuda
+  #       run: |
+  #         CUDA_VERSION=${{ matrix.cuda-version }}
+  #         CUDA_VERSION_DASHED="${CUDA_VERSION//./-}"
+  #         yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
+  #         yum clean all
+  #         yum -y install cuda-compiler-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-devel-$CUDA_VERSION_DASHED.x86_64
           
-          echo "PATH=/usr/local/cuda/bin:$PATH" >> $GITHUB_ENV
-          echo "CUDA_HOME=/usr/local/cuda" >> $GITHUB_ENV
-          echo "CUDA_ROOT=/usr/local/cuda" >> $GITHUB_ENV
-          echo "CUDA_PATH=/usr/local/cuda" >> $GITHUB_ENV
-          echo "CUDADIR=/usr/local/cuda" >> $GITHUB_ENV
-          echo "LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-          echo "CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" >> $GITHUB_ENV
-          echo "CUDNN_LIBRARY_PATH=/usr/local/cuda/lib64" >> $GITHUB_ENV
-          echo "CUDNN_INCLUDE_DIR=/usr/local/cuda/include" >> $GITHUB_ENV
+  #         echo "PATH=/usr/local/cuda/bin:$PATH" >> $GITHUB_ENV
+  #         echo "CUDA_HOME=/usr/local/cuda" >> $GITHUB_ENV
+  #         echo "CUDA_ROOT=/usr/local/cuda" >> $GITHUB_ENV
+  #         echo "CUDA_PATH=/usr/local/cuda" >> $GITHUB_ENV
+  #         echo "CUDADIR=/usr/local/cuda" >> $GITHUB_ENV
+  #         echo "LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+  #         echo "CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" >> $GITHUB_ENV
+  #         echo "CUDNN_LIBRARY_PATH=/usr/local/cuda/lib64" >> $GITHUB_ENV
+  #         echo "CUDNN_INCLUDE_DIR=/usr/local/cuda/include" >> $GITHUB_ENV
       
-      - name: Display NVCC version
-        run: |
-          which nvcc
-          nvcc --version
+  #     - name: Display NVCC version
+  #       run: |
+  #         which nvcc
+  #         nvcc --version
 
-      - name: Install git lfs
-        run: |
-          yum install -y git-lfs
+  #     - name: Install git lfs
+  #       run: |
+  #         yum install -y git-lfs
           
-      - name: Install Miniconda
-        run: |
-          curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
-          bash miniconda.sh -b -p $HOME/miniconda
-          echo "$HOME/miniconda/bin" >> $GITHUB_PATH
+  #     - name: Install Miniconda
+  #       run: |
+  #         curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
+  #         bash miniconda.sh -b -p $HOME/miniconda
+  #         echo "$HOME/miniconda/bin" >> $GITHUB_PATH
   
-      - name: Create and use a Conda environment
-        run: |
-          source $HOME/miniconda/etc/profile.d/conda.sh
-          conda create -n myenv python=${{ matrix.python-version }} -y
-          conda activate myenv
+  #     - name: Create and use a Conda environment
+  #       run: |
+  #         source $HOME/miniconda/etc/profile.d/conda.sh
+  #         conda create -n myenv python=${{ matrix.python-version }} -y
+  #         conda activate myenv
 
-      - name: Install PyTorch ${{ matrix.torch-version }}
-        env:
-          cuda: "${{ matrix.cuda-version }}"
-          torch: "${{ matrix.torch-version }}"
-        shell: bash
-        run: |
-          source $HOME/miniconda/etc/profile.d/conda.sh
-          conda activate myenv
-          python --version
-          python -m pip install -q --upgrade pip
-          python -m pip install -q wheel twine typing_extensions
-          python -m pip install -q bs4 requests tqdm
+  #     - name: Install PyTorch ${{ matrix.torch-version }}
+  #       env:
+  #         cuda: "${{ matrix.cuda-version }}"
+  #         torch: "${{ matrix.torch-version }}"
+  #       shell: bash
+  #       run: |
+  #         source $HOME/miniconda/etc/profile.d/conda.sh
+  #         conda activate myenv
+  #         python --version
+  #         python -m pip install -q --upgrade pip
+  #         python -m pip install -q wheel twine typing_extensions
+  #         python -m pip install -q bs4 requests tqdm
 
-          package=""
-          url=""
+  #         package=""
+  #         url=""
   
-          if [[ "${cuda}" == "11.8" ]]; then
-              package="torch --index-url https://download.pytorch.org/whl/cu118"
-          elif [[ "${cuda}" == "12.1" ]]; then
-              package="torch --index-url https://download.pytorch.org/whl/cu121"
-          elif [[ "${cuda}" == "12.4" ]]; then
-              package="torch --index-url https://download.pytorch.org/whl/cu124"
-          else
-              echo "Unsupported CUDA version: ${cuda}"
-              exit 1
-          fi
+  #         if [[ "${cuda}" == "11.8" ]]; then
+  #             package="torch --index-url https://download.pytorch.org/whl/cu118"
+  #         elif [[ "${cuda}" == "12.1" ]]; then
+  #             package="torch --index-url https://download.pytorch.org/whl/cu121"
+  #         elif [[ "${cuda}" == "12.4" ]]; then
+  #             package="torch --index-url https://download.pytorch.org/whl/cu124"
+  #         else
+  #             echo "Unsupported CUDA version: ${cuda}"
+  #             exit 1
+  #         fi
   
-          retry() {
-            $* || (sleep 1 && $*) || (sleep 2 && $*) || (sleep 4 && $*) || (sleep 8 && $*)
-          }
+  #         retry() {
+  #           $* || (sleep 1 && $*) || (sleep 2 && $*) || (sleep 4 && $*) || (sleep 8 && $*)
+  #         }
   
-          if [ "x${url}" == "x" ]; then
-            retry python -m pip install -q $package
-          else
-            retry python -m pip install -q $package -f $url
-          fi
+  #         if [ "x${url}" == "x" ]; then
+  #           retry python -m pip install -q $package
+  #         else
+  #           retry python -m pip install -q $package -f $url
+  #         fi
           
-          python -c "import torch; print('torch version:', torch.__version__)"
-          python --version
+  #         python -c "import torch; print('torch version:', torch.__version__)"
+  #         python --version
 
           
-      - name: Install dependencies and build GLFW for X11 and Wayland
-        run: |
-          curl -LO https://github.com/glfw/glfw/releases/download/${GLFW_VERSION}/glfw-${GLFW_VERSION}.zip
-          unzip glfw-${GLFW_VERSION}.zip
-          curl -LO https://github.com/Kitware/CMake/releases/download/v3.1.3/cmake-3.1.3-Linux-x86_64.tar.gz
-          tar xzf cmake-3.1.3-Linux-x86_64.tar.gz
-          mv cmake-3.1.3-Linux-x86_64 cmake
-          yum install -y libXinerama-devel libXrandr-devel libXcursor-devel libXi-devel extra-cmake-modules libwayland-client-devel libxkbcommon-devel
-          curl -LO https://wayland.freedesktop.org/releases/wayland-protocols-1.17.tar.xz
-          tar xf wayland-protocols-1.17.tar.xz
-          cd wayland-protocols-1.17
-          ./configure
-          make install
-          cd ..
-          mkdir build_x11
-          cd build_x11
-          ../cmake/bin/cmake ../glfw-${GLFW_VERSION} -DBUILD_SHARED_LIBS=ON -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF
-          make
-          cp src/libglfw.so ../glfw-${GLFW_VERSION}/libglfw.so
+  #     - name: Install dependencies and build GLFW for X11 and Wayland
+  #       run: |
+  #         curl -LO https://github.com/glfw/glfw/releases/download/${GLFW_VERSION}/glfw-${GLFW_VERSION}.zip
+  #         unzip glfw-${GLFW_VERSION}.zip
+  #         curl -LO https://github.com/Kitware/CMake/releases/download/v3.1.3/cmake-3.1.3-Linux-x86_64.tar.gz
+  #         tar xzf cmake-3.1.3-Linux-x86_64.tar.gz
+  #         mv cmake-3.1.3-Linux-x86_64 cmake
+  #         yum install -y libXinerama-devel libXrandr-devel libXcursor-devel libXi-devel extra-cmake-modules libwayland-client-devel libxkbcommon-devel
+  #         curl -LO https://wayland.freedesktop.org/releases/wayland-protocols-1.17.tar.xz
+  #         tar xf wayland-protocols-1.17.tar.xz
+  #         cd wayland-protocols-1.17
+  #         ./configure
+  #         make install
+  #         cd ..
+  #         mkdir build_x11
+  #         cd build_x11
+  #         ../cmake/bin/cmake ../glfw-${GLFW_VERSION} -DBUILD_SHARED_LIBS=ON -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF
+  #         make
+  #         cp src/libglfw.so ../glfw-${GLFW_VERSION}/libglfw.so
           
-      - name: Package
-        run: |
-          source $HOME/miniconda/etc/profile.d/conda.sh
-          conda activate myenv
-          python --version
-          export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
-          export LIB_PATH=glfw-${GLFW_VERSION}
-          python setup.py bdist_wheel --plat-name manylinux2014_x86_64
+  #     - name: Package
+  #       run: |
+  #         source $HOME/miniconda/etc/profile.d/conda.sh
+  #         conda activate myenv
+  #         python --version
+  #         export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
+  #         export LIB_PATH=glfw-${GLFW_VERSION}
+  #         python setup.py bdist_wheel --plat-name manylinux2014_x86_64
 
-      - name: Package latest
-        if: matrix.cuda-version != '11.8'
-        run: |
-          source $HOME/miniconda/etc/profile.d/conda.sh
-          conda activate myenv
-          python --version
-          export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
-          export LIB_PATH=glfw-${GLFW_VERSION}
-          export BASE_VERSION=${{ matrix.torch-version }}
-          python setup.py bdist_wheel --plat-name manylinux2014_x86_64
-          rm -rf glfw-${GLFW_VERSION} build
+  #     - name: Package latest
+  #       if: matrix.cuda-version != '11.8'
+  #       run: |
+  #         source $HOME/miniconda/etc/profile.d/conda.sh
+  #         conda activate myenv
+  #         python --version
+  #         export INCLUDE_PATH=glfw-${GLFW_VERSION}/include
+  #         export LIB_PATH=glfw-${GLFW_VERSION}
+  #         export BASE_VERSION=${{ matrix.torch-version }}
+  #         python setup.py bdist_wheel --plat-name manylinux2014_x86_64
+  #         rm -rf glfw-${GLFW_VERSION} build
 
-      - name: Upload assets
-        run: |
-          for filename in dist/*; do
-            echo "Uploading $filename"
-            gh release upload ${{ env.CUDAPIXELCANVAS_VERSION }} "$filename" --clobber --repo ${{ github.repository }}
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+  #     - name: Upload assets
+  #       run: |
+  #         for filename in dist/*; do
+  #           echo "Uploading $filename"
+  #           gh release upload ${{ env.CUDAPIXELCANVAS_VERSION }} "$filename" --clobber --repo ${{ github.repository }}
+  #         done
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
