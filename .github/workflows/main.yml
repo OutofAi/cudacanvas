@@ -38,8 +38,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.4.1']
-        cuda-version: ['11.8', '12.1']
+        torch-version: ['2.5']
+        cuda-version: ['11.8', '12.1', '12.4']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -64,12 +64,14 @@ jobs:
  
     - name: Download and Extract CUDA Toolkit ${{ matrix.cuda-version }}
       run: |
-        if ("${{ matrix.cuda-version }}" -eq "12.1") {
-          choco install cuda --version=12.2.0.53625
-        } else {
-          choco install cuda --version=11.8.0.52206
-        }
-
+        if [ "${{ matrix.cuda-version }}" == "12.1" ]; then
+            choco install cuda --version=12.2.0.53625
+        elif [ "${{ matrix.cuda-version }}" == "12.5" ]; then
+            choco install cuda --version=12.5.0.555
+        else
+            choco install cuda --version=11.8.0.52206
+        fi
+        
     - name: Install dependencies and build GLFW for Windows
       run: |
         if ("${{env.GLFW_VERSION}}" -eq "") {
@@ -107,7 +109,7 @@ jobs:
         LIB_PATH: glfw-${{ env.GLFW_VERSION }}
 
     - name: Generate latest Wheels
-      if: matrix.cuda-version == '12.1'
+      if: matrix.cuda-version != '11.8'
       run: |
         python3 setup.py bdist_wheel --plat-name win_amd64
       env:
@@ -133,8 +135,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: ['2.4.1']
-        cuda-version: ['11.8', '12.1']
+        torch-version: ['2.5']
+        cuda-version: ['11.8', '12.1', '12.4']
     steps:
       - uses: actions/checkout@v3
         with:
@@ -259,7 +261,7 @@ jobs:
           python setup.py bdist_wheel --plat-name manylinux2014_x86_64
 
       - name: Package latest
-        if: matrix.cuda-version == '12.1'
+        if: matrix.cuda-version != '11.8'
         run: |
           source $HOME/miniconda/etc/profile.d/conda.sh
           conda activate myenv
