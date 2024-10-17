@@ -134,7 +134,7 @@ jobs:
     needs: build-tag
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11']
         torch-version: ['2.5']
         cuda-version: ['11.8', '12.1', '12.4']
     steps:
