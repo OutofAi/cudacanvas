@@ -66,7 +66,7 @@ jobs:
       run: |
         if ("${{ matrix.cuda-version }}" -eq "12.1") {
           choco install cuda --version=12.2.0.53625
-        } else if ("${{ matrix.cuda-version }}" == "12.4") {
+        } elseif ("${{ matrix.cuda-version }}" -eq "12.4") {
           choco install cuda --version=12.4.0.551
         } else {
           choco install cuda --version=11.8.0.52206
