@@ -59,7 +59,7 @@ jobs:
       run: |
         $CUDA_VERSION="${{ matrix.cuda-version }}"
         $CUDA_VERSION_NO_DOT=$CUDA_VERSION -replace '\.', ''
-        pip3 install torch==${{ matrix.torch-version }} --index-url https://download.pytorch.org/whl/cu$CUDA_VERSION_NO_DOT
+        pip3 install torch --index-url https://download.pytorch.org/whl/cu$CUDA_VERSION_NO_DOT
         python3 --version
  
     - name: Download and Extract CUDA Toolkit ${{ matrix.cuda-version }}
