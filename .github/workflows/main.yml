@@ -142,6 +142,9 @@ jobs:
         with:
           fetch-depth: 0
           
+      - name: Install yum-utils
+        run: yum install -y yum-utils
+                
       - name: Add GitHub CLI repository
         run: |
           yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
