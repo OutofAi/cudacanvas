@@ -136,7 +136,7 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
         torch-version: ['2.6']
-        cuda-version: ['11.8', '12.1', '12.4']
+        cuda-version: ['11.8', '12.4', '12.6']
     steps:
       - uses: actions/checkout@v3
         with:
