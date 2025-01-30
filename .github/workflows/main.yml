@@ -39,7 +39,7 @@ jobs:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
         torch-version: ['2.6']
-        cuda-version: ['11.8', '12.1', '12.4']
+        cuda-version: ['11.8', '12.4', '12.6']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -64,8 +64,8 @@ jobs:
  
     - name: Download and Extract CUDA Toolkit ${{ matrix.cuda-version }}
       run: |
-        if ("${{ matrix.cuda-version }}" -eq "12.1") {
-          choco install cuda --version=12.2.0.53625
+        if ("${{ matrix.cuda-version }}" -eq "12.6") {
+          choco install cuda --version=12.6.0.560
         } elseif ("${{ matrix.cuda-version }}" -eq "12.4") {
           choco install cuda --version=12.4.0.551
         } else {
@@ -213,8 +213,8 @@ jobs:
   
           if [[ "${cuda}" == "11.8" ]]; then
               package="torch --index-url https://download.pytorch.org/whl/cu118"
-          elif [[ "${cuda}" == "12.1" ]]; then
-              package="torch --index-url https://download.pytorch.org/whl/cu121"
+          elif [[ "${cuda}" == "12.6" ]]; then
+              package="torch --index-url https://download.pytorch.org/whl/cu126"
           elif [[ "${cuda}" == "12.4" ]]; then
               package="torch --index-url https://download.pytorch.org/whl/cu124"
           else
