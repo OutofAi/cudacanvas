@@ -160,7 +160,7 @@ jobs:
         run: |
           CUDA_VERSION=${{ matrix.cuda-version }}
           CUDA_VERSION_DASHED="${CUDA_VERSION//./-}"
-          yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo
+          yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
           yum clean all
           yum -y install cuda-compiler-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-$CUDA_VERSION_DASHED.x86_64 cuda-libraries-devel-$CUDA_VERSION_DASHED.x86_64
           
